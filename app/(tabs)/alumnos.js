@@ -1,10 +1,11 @@
-import { FlatList, View } from "react-native";
+import { FlatList, View, Alert } from "react-native";
 import { useEffect, useState } from "react";
-import {List, TouchableRipple, TextInput, Text, Menu} from 'react-native-paper';
+import {List, TouchableRipple, TextInput, Text, Menu, Button} from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
+import Agregar from './Agregar';
 
 export default function Alumnos(){
+  const [modalVisible, setModalVisible] = useState(false);
   
   const [alumnos, setAlumnos] = useState([]);
   
@@ -344,7 +345,25 @@ return(
   
   // <TextInput placeholder="hola..."></TextInput> de React native y <TextInput> de Paper no se pueden usar juntos
   <>
-  
+  <Agregar 
+    visible={modalVisible} 
+    onDismiss={() => setModalVisible(false)} 
+    onAdd={(nuevo) => {
+      const duplicado = alumnos.some(
+        (a) => a.matricula === nuevo.matricula || 
+              (a.nombre.toLowerCase() === nuevo.nombre.toLowerCase() && a.apellido.toLowerCase() === nuevo.apellido.toLowerCase())
+      );
+      if (duplicado) {
+        Alert.alert("Error", "Este alumno o matrícula ya está registrado");
+      } else {
+        setAlumnos([...alumnos, nuevo]);
+      }
+    }} 
+  />
+
+  <Button mode="contained" onPress={() => setModalVisible(true)} style={{ margin: 10 }}>
+    Agregar Alumno
+  </Button>
   
   <Text variant="labelMedium">Busca por nombre:</Text>
   <TextInput
